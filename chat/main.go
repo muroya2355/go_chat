@@ -9,12 +9,10 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/stretchr/objx"
-
+	"github.com/muroya2355/go_chat/trace"
 	"github.com/stretchr/gomniauth"
 	"github.com/stretchr/gomniauth/providers/google"
-
-	"github.com/muroya2355/go_chat/trace"
+	"github.com/stretchr/objx"
 )
 
 // templ は1つのテンプレートを表します
@@ -53,6 +51,7 @@ func main() {
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
+	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 	// チャットルームを開始します

@@ -64,7 +64,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalln("ユーザの取得に失敗しました", provider, "-", err)
 		}
 		authCookieValue := objx.New(map[string]interface{}{
-			"name": user.Name(),
+			"name":       user.Name(),
+			"avatar_url": user.AvatarURL(),
 		}).MustBase64()
 		http.SetCookie(w, &http.Cookie{
 			Name:  "auth",
@@ -78,4 +79,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "アクション %s には非対応です", action)
 	}
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:   "auth",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+	w.Header()["Location"] = []string{"/chat"}
+	w.WriteHeader(http.StatusTemporaryRedirect)
 }
